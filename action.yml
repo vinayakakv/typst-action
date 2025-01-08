@@ -30,9 +30,23 @@ inputs:
               fonts
     required: false
     default: ""
+  prepare_commands:
+    description: >
+      A set of commands to execute before the typst command is run.
+      An example use-case is to install fonts.
+      The commands will be passed to /bin/bash as they are. 
+      Use with caution.
+
+      - name: Typst
+          uses: lvignoli/typst-action@main
+          with:
+             source_file: main.typ
+             prepare_commands: |
+                sudo apt install fonts-ibm-plex
 runs:
   using: docker
   image: Dockerfile
   args:
     - ${{ inputs.source_file }}
     - ${{ inputs.options }}
+    - ${{ inputs.prepare_commands }}

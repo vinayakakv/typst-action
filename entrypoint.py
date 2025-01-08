@@ -21,6 +21,15 @@ def compile(filename: str, options: list[str]) -> bool:
 
     return True
 
+def prepare(commands: str):
+    logging.debug("Running prepare commands")
+    result = subprocess.run("/bin/bash", "-c", commands, capture_output=True, text=True)
+    try:
+        result.check_returncode()
+    except subprocess.CalledProcessError:
+        logging.error(f"Prepare commands failed with error: \n {result.stderr}")
+        return False
+    return True
 
 def main():
 
@@ -32,6 +41,12 @@ def main():
     #      whitespace separated field should be on its own line.
     source_files = sys.argv[1].splitlines()
     options = sys.argv[2].splitlines()
+    prepare_commands = sys.argv(3)
+    prepare_result = prepare(prepare_commands) if len(prepare_commands) > 0 else True
+
+    if not prepare_result:
+        logging.info("Prepare commands failed")
+        sys.exit(1)
 
     version = subprocess.run(
         ["typst", "--version"], capture_output=True, text=True
